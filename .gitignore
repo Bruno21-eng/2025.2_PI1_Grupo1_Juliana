@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+# Ambiente Virtual
+.venv/
+venv/
+env/
+# Credenciais e Logs
+.env
+*.log
