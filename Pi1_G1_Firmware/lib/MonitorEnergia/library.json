@@ -1,0 +1,11 @@
+{
+  "name": "MonitorEnergia",
+  "version": "1.0.0",
+  "description": "Uma biblioteca local para abstrair o sensor INA219.",
+  "authors": {
+    "name": "Seu Nome Aqui"
+  },
+  "dependencies": {
+    "adafruit/Adafruit INA219": "^1.2.3"
+  }
+}
