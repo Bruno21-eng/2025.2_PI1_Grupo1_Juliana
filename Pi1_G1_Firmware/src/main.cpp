@@ -39,11 +39,16 @@ void loop() {
   if (EnergiaConsumida > EnergiaTotal) EnergiaConsumida = EnergiaTotal;
 
   float EnergiaRestante = EnergiaTotal - EnergiaConsumida;
-  float t_restante = (P > 0.001) ? (EnergiaRestante / P) : INFINITY;
-  if (t_restante < 0) t_restante = 0;
+  float t_restante = (P > 0.001) ? (EnergiaRestante / P) : INFINITY; // segundos
 
-  Serial.printf("Tensão: %.3f V | Corrente: %.3f mA | Tempo restante: %.2f s\n",
-                tensao, corrente_mA, t_restante);
+  // Conversão de tempo
+  int total_segundos = (int)t_restante;
+  int t_h = total_segundos / 3600;
+  int t_min = (total_segundos % 3600) / 60;
+  float t_seg = t_restante - (t_h *3600) - (t_min * 60);
+
+  Serial.printf("Tensão: %.3f V | Corrente: %.3f mA | Tempo restante: %d h %d min %.3f s (%.2f s)\n",
+                tensao, corrente_mA, t_h, t_min, t_seg, t_restante);
 
   delay(5000);
 }
