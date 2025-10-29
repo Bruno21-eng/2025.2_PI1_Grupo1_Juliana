@@ -2,6 +2,7 @@
 #include <MonitorEnergia.h>
 #include <mqtt.h>
 #include <WiFi.h>
+#include <ServoMotor.h>
 
 #define WIFI_SSID     "Wokwi-GUEST"
 #define WIFI_PASSWORD ""
@@ -41,6 +42,9 @@ void setup() {
   Serial.println("Monitor de energia iniciado!");
 
   mqtt_init();
+  servoSetup(18, 0);  // Servo no pino 18, começa em 0°
+
+  Serial.println("Servo inicializado!");
 }
 
 void loop() {
@@ -70,4 +74,8 @@ void loop() {
                 tensao, corrente_mA, t_h, t_min, t_seg, t_restante);
 
   delay(5000);
+
+    //Exemplo de como chamar a função para movimentar o servo motor
+  MovimentaServo(90, 5000); //Aqui estamos fazendo o servo girar 90° por 5 segundos
+
 }
