@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <MonitorEnergia.h>
+#include <ServoMotor.h>
 
 MonitorEnergia ina219;
 
@@ -22,6 +23,10 @@ void setup() {
   ultimoTempo = millis();
 
   Serial.println("Monitor de energia iniciado!");
+
+  servoSetup(18, 0);  // Servo no pino 18, começa em 0°
+
+  Serial.println("Servo inicializado!");
 }
 
 void loop() {
@@ -51,4 +56,8 @@ void loop() {
                 tensao, corrente_mA, t_h, t_min, t_seg, t_restante);
 
   delay(5000);
+
+    //Exemplo de como chamar a função para movimentar o servo motor
+  MovimentaServo(90, 5000); //Aqui estamos fazendo o servo girar 90° por 5 segundos
+
 }
