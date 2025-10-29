@@ -1,5 +1,11 @@
 #include <Arduino.h>
 #include <MonitorEnergia.h>
+#include <mqtt.h>
+#include <WiFi.h>
+
+#define WIFI_SSID     "Wokwi-GUEST"
+#define WIFI_PASSWORD ""
+#define WIFI_CHANNEL  6
 
 MonitorEnergia ina219;
 
@@ -9,39 +15,52 @@ float EnergiaTotal;
 float EnergiaConsumida = 0;
 unsigned long ultimoTempo;
 
+static void wifi_connect(const char* ssid, const char* pass, int channel) {
+  WiFi.setSleep(false);
+  WiFi.begin(ssid, pass, channel);
+  Serial.print("WiFi conectando");
+  while (WiFi.status() != WL_CONNECTED) { delay(120); Serial.print("."); }
+  Serial.println(" ✓");
+  Serial.print("IP: "); Serial.println(WiFi.localIP());
+}
+
 void setup() {
   Serial.begin(115200);
   delay(100);
+
+  wifi_connect(WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
 
   if (!ina219.iniciar()) {
     Serial.println("ERRO: Sensor INA219 não encontrado!");
     while (1) delay(10);
   }
 
-  EnergiaTotal = V_nominal * Capacidade_Ah * 3600.0; // energia total em Joules
+  EnergiaTotal = V_nominal * Capacidade_Ah * 3600.0;
   ultimoTempo = millis();
 
   Serial.println("Monitor de energia iniciado!");
+
+  mqtt_init();
 }
 
 void loop() {
-  float corrente_mA = ina219.obterCorrente(); // leitura em mA
-  float corrente = corrente_mA / 1000.0;      // converte para A
+  mqtt_loop();
+  float corrente_mA = ina219.obterCorrente();
+  float corrente = corrente_mA / 1000.0;
   float tensao = ina219.obterTensao();
 
   unsigned long agora = millis();
-  float dt = (agora - ultimoTempo) / 1000.0; // segundos
+  float dt = (agora - ultimoTempo) / 1000.0;
   ultimoTempo = agora;
 
-  float P = tensao * corrente; // potência em W
-  EnergiaConsumida += P * dt;  // energia em J acumulada
+  float P = tensao * corrente;
+  EnergiaConsumida += P * dt;
 
   if (EnergiaConsumida > EnergiaTotal) EnergiaConsumida = EnergiaTotal;
 
   float EnergiaRestante = EnergiaTotal - EnergiaConsumida;
-  float t_restante = (P > 0.001) ? (EnergiaRestante / P) : INFINITY; // segundos
+  float t_restante = (P > 0.001) ? (EnergiaRestante / P) : INFINITY;
 
-  // Conversão de tempo
   int total_segundos = (int)t_restante;
   int t_h = total_segundos / 3600;
   int t_min = (total_segundos % 3600) / 60;
