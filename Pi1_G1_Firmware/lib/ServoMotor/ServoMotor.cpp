@@ -1,6 +1,6 @@
 #include "ServoMotor.h"
 
-Servo servoMotor;
+Sg90 servoMotor;
 
 namespace {
   int servoAnguloInicial = 0;         // posição inicial do servo

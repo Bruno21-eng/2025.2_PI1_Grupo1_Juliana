@@ -2,10 +2,10 @@
 #define ServoMotor_h
 
 #include <Arduino.h>
-#include <Servo.h>
+#include <Sg90.h>
 
 // Objeto global do servo (declarado aqui para ser usado no sketch principal)
-extern Servo servoMotor;
+extern Sg90 servoMotor;
 
 // Funções públicas
 void ServoSetup(int pin, int anguloInicial = 0);
