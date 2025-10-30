@@ -15,5 +15,11 @@ static const uint8_t PWMB_L = 13;
 //Servo
 static const uint8_t PWM_SERVO = 18;
 //I2C
-static const uint8_t SDA = 21;
-static const uint8_t SCL = 22;
+// static const uint8_t SDA = 21;
+// static const uint8_t SCL = 22;
+
+//Motors PWMs
+static const int MOTOR_PWM_FREQUENCY = 1000;
+static const uint8_t MOTOR_PWM_RESOLUTION = 8;
+static const uint8_t MOTOR_PWMA_CHANNEL = 1;
+static const uint8_t MOTOR_PWMB_CHANNEL = 2;
