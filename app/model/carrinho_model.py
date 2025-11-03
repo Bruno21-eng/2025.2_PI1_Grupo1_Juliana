@@ -15,4 +15,4 @@ class Carrinho(CarrinhoCreate):
     id_carrinho: int 
 
     class Config:
-        orm_mode = True
+        from_attributes = True
