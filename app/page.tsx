@@ -1,14 +1,43 @@
 "use client"
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Navigation2, Route, Activity, BarChart3, Wifi, WifiOff } from "lucide-react"
 import Link from "next/link"
 
+interface TrajectoryStats {
+  total_saved: number
+  total_executed: number
+}
+
 export default function Dashboard() {
   const [isConnected, setIsConnected] = useState(true)
+  const [stats, setStats] = useState<TrajectoryStats | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+        const response = await fetch(`${apiUrl}/trajectories/stats`)
+
+        if (!response.ok) {
+          throw new Error("Falha ao buscar estatísticas")
+        }
+        
+        const data: TrajectoryStats = await response.json()
+        setStats(data)
+      } catch (error) {
+        console.error("Erro ao buscar estatísticas:", error)
+        setStats({ total_saved: 0, total_executed: 0 })
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchStats()
+  }, [])
 
   return (
     <div className="min-h-screen bg-background">
@@ -62,7 +91,6 @@ export default function Dashboard() {
               </CardHeader>
             </Card>
           </Link>
-
           <Link href="/send-trajectory" className="group">
             <Card className="transition-all hover:shadow-lg hover:border-primary cursor-pointer h-full">
               <CardHeader>
@@ -74,7 +102,6 @@ export default function Dashboard() {
               </CardHeader>
             </Card>
           </Link>
-
           <Link href="/telemetry" className="group">
             <Card className="transition-all hover:shadow-lg hover:border-primary cursor-pointer h-full">
               <CardHeader>
@@ -86,7 +113,6 @@ export default function Dashboard() {
               </CardHeader>
             </Card>
           </Link>
-
           <Link href="/results" className="group">
             <Card className="transition-all hover:shadow-lg hover:border-primary cursor-pointer h-full">
               <CardHeader>
@@ -101,7 +127,7 @@ export default function Dashboard() {
         </div>
 
         {/* Status Overview */}
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
+        <div className="mt-8 grid gap-6 md:grid-cols-2">
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Status do Sistema</CardTitle>
@@ -137,33 +163,23 @@ export default function Dashboard() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Salvas</span>
-                  <span className="text-sm font-medium">12</span>
+                  <span className="text-sm font-medium">
+                    {isLoading ? "..." : stats?.total_saved ?? 0}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Executadas</span>
-                  <span className="text-sm font-medium">45</span>
+                  <span className="text-sm font-medium">
+                    {isLoading ? "..." : stats?.total_executed ?? 0}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Taxa de Sucesso</span>
-                  <span className="text-sm font-medium">98%</span>
+                  <span className="text-sm font-medium">
+                    {isLoading ? "..." : "N/A"}
+                  </span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Ações Rápidas</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Button variant="outline" className="w-full justify-start bg-transparent" size="sm">
-                <Route className="mr-2 h-4 w-4" />
-                Nova Trajetória
-              </Button>
-              <Button variant="outline" className="w-full justify-start bg-transparent" size="sm">
-                <Activity className="mr-2 h-4 w-4" />
-                Ver Telemetria
-              </Button>
             </CardContent>
           </Card>
         </div>
