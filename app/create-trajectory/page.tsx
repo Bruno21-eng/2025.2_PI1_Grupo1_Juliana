@@ -137,16 +137,61 @@ export default function CreateTrajectory() {
     return commandTemplates.find((t) => t.type === type)?.color || "bg-gray-500"
   }
 
-  const handleSend = () => {
-    setSendStatus("sending")
-    setTimeout(() => {
-      setSendStatus("success")
-    }, 2000)
-  }
+  const handleSend = async () => {
+    setSendStatus("sending");
+
+    if (!trajectoryName || commands.length === 0) {
+      console.error("Nome ou comandos faltando");
+      setSendStatus("error");
+      return;
+    }
+
+    const payloadCommands = commands.map(({ type, value, unit }) => ({
+      type,
+      value,
+      unit,
+    }));
+
+    const payload = {
+      name: trajectoryName,
+      commands: payloadCommands,
+      store_in_memory: storeInMemory,
+    };
+
+    try {
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+          if (!apiUrl) {
+            throw new Error("API URL não está configurada");
+          }
+
+          const response = await fetch(`${apiUrl}/trajectories/`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Trajetória salva com sucesso:", result);
+        setSendStatus("success");
+      } else {
+        console.error("Falha ao salvar trajetória:", response.statusText);
+        setSendStatus("error");
+      }
+    } catch (error) {
+      console.error("Erro de rede:", error);
+      setSendStatus("error");
+    }
+  };
 
   const resetStatus = () => {
-    setSendStatus("idle")
-  }
+    setSendStatus("idle");
+    setTrajectoryName("");
+    setCommands([]);
+    setStoreInMemory(false);
+  };
 
   return (
     <div className="min-h-screen bg-background">
