@@ -42,3 +42,7 @@ def get_trajectory_stats(db: Session) -> dict:
         "total_saved": total_saved,
         "total_executed": total_executed
     }
+
+def get_all_trajectories(db: Session) -> list[models.Trajectory]:
+
+    return db.query(models.Trajectory).order_by(models.Trajectory.created_at.desc()).all()
