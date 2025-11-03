@@ -36,3 +36,8 @@ class TrajectoryRead(BaseModel):
 
     class Config:
         from_attributes = True
+
+class TrajectoryStats(BaseModel):
+
+    total_saved: int
+    total_executed: int

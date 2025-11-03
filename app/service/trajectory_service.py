@@ -30,3 +30,15 @@ def create_trajectory(db: Session, trajectory_data: TrajectoryCreate) -> models.
     db.refresh(db_trajectory)
     
     return db_trajectory
+
+def get_trajectory_stats(db: Session) -> dict:
+
+    total_saved = db.query(models.Trajectory).count()
+    total_executed = db.query(models.Trajectory).filter(
+        models.Trajectory.status.in_(["executed", "completed"])
+    ).count()
+
+    return {
+        "total_saved": total_saved,
+        "total_executed": total_executed
+    }
