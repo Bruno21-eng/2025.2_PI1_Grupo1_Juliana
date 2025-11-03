@@ -15,7 +15,7 @@ Siga os passos abaixo para configurar o ambiente e instalar as dependências.
 
 ```bash
 # Cria um ambiente virtual
-python -m venv .venv
+python3 -m venv .venv
 
 # Ativa o ambiente virtual (Linux/macOS)
 source .venv/bin/activate
@@ -29,7 +29,7 @@ source .venv/bin/activate
 Instale todas as bibliotecas necessárias:
 
 ```bash
-pip install fastapi uvicorn sqlalchemy psycopg2-binary pydantic python-dotenv
+pip install -r requirements.txt
 ```
 
 ## Rodando o Projeto
