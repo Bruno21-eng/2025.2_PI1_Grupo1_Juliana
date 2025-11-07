@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import database
 from app.controller import carrinho_controller
 from app.controller import trajectory_controller
+from app.mqtt.mqtt_client import connect_mqtt, disconnect_mqtt
 
 app = FastAPI(
     title="Projeto PI1"
@@ -23,6 +24,11 @@ app.add_middleware(
 @app.on_event("startup")
 def on_startup():
     database.Base.metadata.create_all(bind=database.engine)
+    connect_mqtt()
+
+@app.on_event("shutdown")
+def on_shutdown():
+    disconnect_mqtt()
 
 app.include_router(trajectory_controller.router)
 app.include_router(carrinho_controller.router)

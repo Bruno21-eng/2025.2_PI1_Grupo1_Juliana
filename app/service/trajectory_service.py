@@ -1,6 +1,12 @@
 from sqlalchemy.orm import Session
 from app.model import models
 from app.model.trajectory import TrajectoryCreate
+import json
+
+from app.mqtt.mqtt_client import publish_message
+
+# Topico
+FIRMWARE_COMMAND_TOPIC = "trajectories/execute"
 
 def create_trajectory(db: Session, trajectory_data: TrajectoryCreate) -> models.Trajectory:
     """
@@ -28,6 +34,28 @@ def create_trajectory(db: Session, trajectory_data: TrajectoryCreate) -> models.
     db.add_all(db_commands)
     db.commit()
     db.refresh(db_trajectory)
+    
+    # ---  MQTT ---
+
+    # Formatando a mensagem para o firmware.
+    commands_list_for_mqtt = [
+        {"type": cmd.type.value, "value": cmd.value, "unit": cmd.unit} #
+        for cmd in trajectory_data.commands
+    ]
+
+    # Enviando o ID da trajetória e a lista de comandos.
+    payload = {
+        "trajectory_id": db_trajectory.id,
+        "name": db_trajectory.name,
+        "commands": commands_list_for_mqtt
+    }
+
+    # Serializando o dicionário para JSON.
+    payload_str = json.dumps(payload)
+    
+    # Publica
+    publish_message(topic=FIRMWARE_COMMAND_TOPIC, payload=payload_str)
+    
     
     return db_trajectory
 
