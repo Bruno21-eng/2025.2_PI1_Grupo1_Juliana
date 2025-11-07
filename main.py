@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import database
 from app.controller import carrinho_controller
 from app.controller import trajectory_controller
+from app.controller import execution_controller
 
 app = FastAPI(
     title="Projeto PI1"
@@ -26,6 +27,7 @@ def on_startup():
 
 app.include_router(trajectory_controller.router)
 app.include_router(carrinho_controller.router)
+app.include_router(execution_controller.router)
 
 @app.get("/")
 def read_root():
