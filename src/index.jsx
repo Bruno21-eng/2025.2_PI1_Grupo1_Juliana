@@ -1,4 +1,3 @@
-// index.jsx
 // Ponto de entrada do React
 
 import React from "react";
