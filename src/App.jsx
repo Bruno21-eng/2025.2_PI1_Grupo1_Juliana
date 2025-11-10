@@ -1,13 +1,10 @@
-// Componente principal da aplicação
+// Arquivo principal que carrega o roteador e define o tema global
 
-import React from "react";
 import AppRoutes from "./routes/AppRoutes";
-import "./styles/global.css";
 
 function App() {
   return (
-    <div className="App">
-      {/* Define o sistema de rotas */}
+    <div>
       <AppRoutes />
     </div>
   );
